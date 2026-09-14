@@ -151,3 +151,58 @@ func TestHandleCalculator(t *testing.T) {
 		})
 	}
 }
+
+func TestCORSMiddleware(t *testing.T) {
+	tests := []struct {
+		name              string
+		method            string
+		expectedStatus    int
+		checkCORSHeaders  bool
+	}{
+		{
+			name:             "CORS: OPTIONS preflight request",
+			method:           http.MethodOptions,
+			expectedStatus:   http.StatusOK,
+			checkCORSHeaders: true,
+		},
+		{
+			name:             "CORS: POST request with CORS headers",
+			method:           http.MethodPost,
+			expectedStatus:   http.StatusOK,
+			checkCORSHeaders: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, _ := json.Marshal(calculatorRequest{ValueA: 2, ValueB: 3, Operation: "+"})
+			req := httptest.NewRequest(tt.method, "/calculate", bytes.NewReader(body))
+			w := httptest.NewRecorder()
+
+			handler := CORSMiddleware(HandleCalculator)
+			handler(w, req)
+
+			if tt.checkCORSHeaders {
+				corsOrigin := w.Header().Get("Access-Control-Allow-Origin")
+				corsMethods := w.Header().Get("Access-Control-Allow-Methods")
+				corsHeaders := w.Header().Get("Access-Control-Allow-Headers")
+
+				if corsOrigin != "*" {
+					t.Errorf("Expected Access-Control-Allow-Origin: *, got: %s", corsOrigin)
+				}
+				if corsMethods != "POST, OPTIONS" {
+					t.Errorf("Expected Access-Control-Allow-Methods: POST, OPTIONS, got: %s", corsMethods)
+				}
+				if corsHeaders != "Content-Type" {
+					t.Errorf("Expected Access-Control-Allow-Headers: Content-Type, got: %s", corsHeaders)
+				}
+			}
+
+			if tt.method == http.MethodOptions {
+				if w.Code != http.StatusOK {
+					t.Errorf("OPTIONS request should return 200, got %d", w.Code)
+				}
+			}
+		})
+	}
+}

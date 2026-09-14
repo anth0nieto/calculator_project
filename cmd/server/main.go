@@ -14,7 +14,8 @@ func main() {
 	flag.Parse()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /calculate", httpapi.HandleCalculator)
+	mux.HandleFunc("POST /calculate", httpapi.CORSMiddleware(httpapi.HandleCalculator))
+	mux.HandleFunc("OPTIONS /calculate", httpapi.CORSMiddleware(httpapi.HandleCalculator))
 
 	addr := fmt.Sprintf(":%s", *port)
 	log.Printf("Calculator server listening on http://localhost%s\n", addr)
