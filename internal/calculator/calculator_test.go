@@ -95,7 +95,7 @@ func TestCalculator(t *testing.T) {
 
 		// Overflow cases - Multiplication
 		{"Overflow: 1e200 * 1e200", 1e200, 1e200, "*", 0, ErrOverflow},
-		{"Overflow: very large multiply", math.MaxFloat64/2, 10, "*", 0, ErrOverflow},
+		{"Overflow: very large multiply", math.MaxFloat64 / 2, 10, "*", 0, ErrOverflow},
 		{"Overflow: -1e200 * 1e200", -1e200, 1e200, "*", 0, ErrOverflow},
 
 		// Overflow cases - Power
@@ -105,7 +105,7 @@ func TestCalculator(t *testing.T) {
 
 		// Float64 precision cases
 		{"Precision: 0.1 + 0.2", 0.1, 0.2, "+", 0.3, nil},
-		{"Precision: 1/3 * 3", 1.0/3.0, 3, "*", 1.0, nil},
+		{"Precision: 1/3 * 3", 1.0 / 3.0, 3, "*", 1.0, nil},
 	}
 
 	for _, tt := range tests {
