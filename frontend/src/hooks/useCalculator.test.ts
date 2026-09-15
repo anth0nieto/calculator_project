@@ -98,7 +98,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error).toBe('INVALID_INPUT');
+      expect(result.current.error?.type).toBe('INVALID_INPUT');
       expect(mockCalculate).not.toHaveBeenCalled();
     });
 
@@ -114,7 +114,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error).toBe('INVALID_INPUT');
+      expect(result.current.error?.type).toBe('INVALID_INPUT');
       expect(mockCalculate).not.toHaveBeenCalled();
     });
 
@@ -155,7 +155,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error).toBe('INVALID_INPUT');
+      expect(result.current.error?.type).toBe('INVALID_INPUT');
     });
 
     it('should validate missing operation', async () => {
@@ -170,7 +170,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error).toBe('INVALID_INPUT');
+      expect(result.current.error?.type).toBe('INVALID_INPUT');
     });
   });
 
@@ -188,7 +188,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error).toBe('DIVISION_BY_ZERO');
+      expect(result.current.error?.type).toBe('DIVISION_BY_ZERO');
       expect(mockCalculate).not.toHaveBeenCalled();
     });
 
@@ -204,7 +204,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error).toBe('NEGATIVE_SQRT');
+      expect(result.current.error?.type).toBe('NEGATIVE_SQRT');
       expect(mockCalculate).not.toHaveBeenCalled();
     });
 
@@ -221,7 +221,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error).toBe('NEGATIVE_BASE_FRACTIONAL_EXPONENT');
+      expect(result.current.error?.type).toBe('NEGATIVE_BASE_FRACTIONAL_EXPONENT');
       expect(mockCalculate).not.toHaveBeenCalled();
     });
 
@@ -314,7 +314,7 @@ describe('useCalculator', () => {
       });
 
       expect(result.current.result).toBeNull();
-      expect(result.current.error).toBe('DIVISION_BY_ZERO');
+      expect(result.current.error?.type).toBe('DIVISION_BY_ZERO');
     });
 
     it('should manage loading state', async () => {

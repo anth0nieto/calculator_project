@@ -6,43 +6,43 @@ describe('validateCalculatorInput', () => {
     it('should pass valid addition', () => {
       const result = validateCalculatorInput('10', '5', '+', false);
       expect(result.isValid).toBe(true);
-      expect(result.error).toBeUndefined();
+      expect(result.error).toBeFalsy();
     });
 
     it('should pass valid sqrt', () => {
       const result = validateCalculatorInput('16', '', 'sqrt', true);
       expect(result.isValid).toBe(true);
-      expect(result.error).toBeUndefined();
+      expect(result.error).toBeFalsy();
     });
 
     it('should fail on empty valueA', () => {
       const result = validateCalculatorInput('', '5', '+', false);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('INVALID_INPUT');
+      expect(result.error?.type).toBe('INVALID_INPUT');
     });
 
     it('should fail on non-numeric valueA', () => {
       const result = validateCalculatorInput('abc', '5', '+', false);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('INVALID_INPUT');
+      expect(result.error?.type).toBe('INVALID_INPUT');
     });
 
     it('should fail on empty valueB for binary operation', () => {
       const result = validateCalculatorInput('10', '', '+', false);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('INVALID_INPUT');
+      expect(result.error?.type).toBe('INVALID_INPUT');
     });
 
     it('should fail on non-numeric valueB', () => {
       const result = validateCalculatorInput('10', 'abc', '+', false);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('INVALID_INPUT');
+      expect(result.error?.type).toBe('INVALID_INPUT');
     });
 
     it('should fail on missing operation', () => {
       const result = validateCalculatorInput('10', '5', '', false);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('INVALID_INPUT');
+      expect(result.error?.type).toBe('INVALID_INPUT');
     });
   });
 
@@ -50,7 +50,7 @@ describe('validateCalculatorInput', () => {
     it('should fail on division by zero', () => {
       const result = validateCalculatorInput('5', '0', '/', false);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('DIVISION_BY_ZERO');
+      expect(result.error?.type).toBe('DIVISION_BY_ZERO');
     });
 
     it('should pass on division by non-zero', () => {
@@ -68,7 +68,7 @@ describe('validateCalculatorInput', () => {
     it('should fail on sqrt of negative', () => {
       const result = validateCalculatorInput('-1', '', 'sqrt', true);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('NEGATIVE_SQRT');
+      expect(result.error?.type).toBe('NEGATIVE_SQRT');
     });
 
     it('should pass on sqrt of zero', () => {
@@ -86,7 +86,7 @@ describe('validateCalculatorInput', () => {
     it('should fail on negative base with fractional exponent', () => {
       const result = validateCalculatorInput('-2', '0.5', '^', false);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('NEGATIVE_BASE_FRACTIONAL_EXPONENT');
+      expect(result.error?.type).toBe('NEGATIVE_BASE_FRACTIONAL_EXPONENT');
     });
 
     it('should pass on negative base with integer exponent', () => {

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
-import { CalculatorApiClient, type Operation, type CalculatorError } from '../api';
-import { validateCalculatorInput } from './validation';
+import { CalculatorApiClient, type Operation } from '../api';
+import { validateCalculatorInput, type ValidationError } from './validation';
 
 interface UseCalculatorState {
   valueA: string;
@@ -8,7 +8,7 @@ interface UseCalculatorState {
   operation: Operation | '';
   loading: boolean;
   result: number | null;
-  error: CalculatorError | null;
+  error: ValidationError | null;
 }
 
 const UNARY_OPERATIONS: Operation[] = ['sqrt'];
@@ -97,8 +97,13 @@ export function useCalculator() {
     setState((prev) => ({
       ...prev,
       loading: false,
-      result: result.success ? result.data!.result : null,
-      error: result.success ? null : result.error!.type,
+      result: result.success ? result.data.result : null,
+      error: result.success
+        ? null
+        : {
+            type: result.error.type,
+            message: result.error.message,
+          },
     }));
   }, [state.valueA, state.valueB, state.operation, isUnaryOperation]);
 
