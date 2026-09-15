@@ -7,7 +7,7 @@ vi.mock('../hooks', () => ({
   useCalculator: vi.fn(),
 }));
 
-const mockUseCalculator = hooks.useCalculator as any;
+const mockUseCalculator = vi.mocked(hooks.useCalculator);
 
 const createMockHook = (overrides = {}) => ({
   valueA: '',
@@ -226,9 +226,7 @@ describe('Calculator Component', () => {
       );
       render(<Calculator />);
 
-      expect(
-        screen.getByText('Enter numbers and select an operation')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Result:')).toBeInTheDocument();
     });
   });
 

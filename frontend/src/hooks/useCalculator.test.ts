@@ -170,7 +170,7 @@ describe('useCalculator', () => {
         await result.current.calculate();
       });
 
-      expect(result.current.error?.type).toBe('INVALID_INPUT');
+      expect(result.current.error?.type).toBe('INVALID_OPERATION');
     });
   });
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useCalculator } from '../hooks';
 import type { Operation } from '../api';
 import styles from './Calculator.module.css';
@@ -45,6 +45,7 @@ export function Calculator() {
   } = useCalculator();
 
   const [activeField, setActiveField] = useState<ActiveField>('a');
+  const inputARef = useRef<HTMLInputElement>(null);
 
   const appendDigit = useCallback(
     (digit: string) => {
@@ -146,39 +147,46 @@ export function Calculator() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  useEffect(() => {
+    inputARef.current?.focus();
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>Calculator</h1>
-
         {/* Display Area */}
         <div className={styles.displayArea}>
-          {/* Field A */}
-          <div className={styles.fieldGroup}>
-            <label htmlFor="valueA" className={styles.label}>
-              First Number
-            </label>
-            <input
-              id="valueA"
-              type="text"
-              value={valueA}
-              onChange={(e) => setValueA(e.target.value.replace(/[^0-9.-]/g, ''))}
-              onClick={() => setActiveField('a')}
-              disabled={loading}
-              placeholder="0"
-              aria-label="First number input"
-              className={`${styles.input} ${activeField === 'a' ? styles.inputActive : ''}`}
-            />
+          {/* Row A: Field A + Operation Display */}
+          <div className={styles.rowA}>
+            <div className={styles.fieldGroup}>
+              <label htmlFor="valueA" className={styles.label}>
+                First Number
+              </label>
+              <input
+                ref={inputARef}
+                id="valueA"
+                type="text"
+                value={valueA}
+                onChange={(e) => setValueA(e.target.value.replace(/[^0-9.-]/g, ''))}
+                onClick={() => setActiveField('a')}
+                onFocus={() => setActiveField('a')}
+                disabled={loading}
+                placeholder="0"
+                aria-label="First number input"
+                className={`${styles.input} ${activeField === 'a' ? styles.inputActive : ''}`}
+              />
+            </div>
+
+            {/* Operation Display (only show if operation selected) */}
+            {operation && (
+              <div className={styles.operationDisplay}>
+                {OPERATIONS.find((op) => op.value === operation)?.symbol || operation}
+              </div>
+            )}
           </div>
 
-          {/* Operation Display */}
-          {operation && (
-            <div className={styles.operationDisplay}>
-              {OPERATIONS.find((op) => op.value === operation)?.symbol || operation}
-            </div>
-          )}
-
-          {/* Field B (hidden for unary operations) */}
+          {/* Row B: Field B (hidden for unary operations) */}
           {!isUnaryOperation && (
             <div className={styles.fieldGroup}>
               <label htmlFor="valueB" className={styles.label}>
@@ -190,11 +198,28 @@ export function Calculator() {
                 value={valueB}
                 onChange={(e) => setValueB(e.target.value.replace(/[^0-9.-]/g, ''))}
                 onClick={() => setActiveField('b')}
+                onFocus={() => setActiveField('b')}
                 disabled={loading}
                 placeholder="0"
                 aria-label="Second number input"
                 className={`${styles.input} ${activeField === 'b' ? styles.inputActive : ''}`}
               />
+            </div>
+          )}
+
+          {/* Result Display - Top */}
+          {!error && (
+            <div className={styles.resultContainer} role="status">
+              <div className={styles.resultLabel}>Result:</div>
+              <div className={styles.resultValue}>{result}</div>
+            </div>
+          )}
+
+          {/* Error Display - Top */}
+          {error && (
+            <div className={styles.errorContainer} role="alert">
+              <div className={styles.errorLabel}>Error:</div>
+              <div className={styles.errorMessage}>{error.message}</div>
             </div>
           )}
         </div>
@@ -277,29 +302,6 @@ export function Calculator() {
         >
           Reset
         </button>
-
-        {/* Result Display */}
-        {result !== null && !error && (
-          <div className={styles.resultContainer} role="status">
-            <div className={styles.resultLabel}>Result:</div>
-            <div className={styles.resultValue}>{result}</div>
-          </div>
-        )}
-
-        {/* Error Display */}
-        {error && (
-          <div className={styles.errorContainer} role="alert">
-            <div className={styles.errorLabel}>Error:</div>
-            <div className={styles.errorMessage}>{error.message}</div>
-          </div>
-        )}
-
-        {/* Idle State */}
-        {result === null && !error && !loading && (
-          <div className={styles.emptyState}>
-            <p>Enter numbers and select an operation</p>
-          </div>
-        )}
       </div>
     </div>
   );

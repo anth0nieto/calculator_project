@@ -24,7 +24,8 @@ export type CalculatorError =
   | 'UNDEFINED_RESULT'
   | 'OVERFLOW'
   | 'NETWORK_ERROR'
-  | 'UNKNOWN_ERROR';
+  | 'UNKNOWN_ERROR'
+  | 'INVALID_OPERATION';
 
 export type ApiResult<T> =
   | { success: true; data: T }

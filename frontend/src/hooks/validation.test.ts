@@ -42,7 +42,7 @@ describe('validateCalculatorInput', () => {
     it('should fail on missing operation', () => {
       const result = validateCalculatorInput('10', '5', '', false);
       expect(result.isValid).toBe(false);
-      expect(result.error?.type).toBe('INVALID_INPUT');
+      expect(result.error?.type).toBe('INVALID_OPERATION');
     });
   });
 

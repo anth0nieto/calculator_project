@@ -13,6 +13,7 @@ export interface ValidationResult {
 const ERROR_MESSAGES: Record<CalculatorError, string> = {
   INVALID_INPUT: 'Please enter valid numbers',
   DIVISION_BY_ZERO: 'Cannot divide by zero',
+  INVALID_OPERATION: 'The selected operation is not valid',
   NEGATIVE_SQRT: 'Cannot calculate square root of a negative number',
   NEGATIVE_BASE_FRACTIONAL_EXPONENT:
     'Cannot raise a negative number to a fractional power',
@@ -63,7 +64,7 @@ export function validateCalculatorInput(
   if (!operation) {
     return {
       isValid: false,
-      error: { type: 'INVALID_INPUT', message: ERROR_MESSAGES.INVALID_INPUT },
+      error: { type: 'INVALID_OPERATION', message: ERROR_MESSAGES.INVALID_OPERATION },
     };
   }
 
