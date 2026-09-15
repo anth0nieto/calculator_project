@@ -118,7 +118,7 @@ Open in your browser:
 
 - **Backend Calculator:** 90.7% (domain logic is thoroughly tested)
 - **Backend HTTP API:** 97.1%
-- **Frontend:** 83.2% overall
+- **Frontend:** 83.1% overall (Statements: 83.1%, Branches: 70.9%, Functions: 83.3%, Lines: 82.1%)
 
 ### Run Tests Individually
 
@@ -224,7 +224,7 @@ A 400 means "I don't understand the request." A 422 means "I understand, but it 
 **Client validates for responsiveness** — immediate feedback without a round trip.
 
 The split follows what's cheap and stable to check locally:
-- *Client:* empty fields, non-numeric values, zero divisor, negative sqrt. One-line checks.
+- *Client:* empty fields, non-numeric values, missing operator, zero divisor, negative sqrt. One-line checks.
 - *Server:* overflow, undefined results. Replicating float64 limits in TypeScript would be true duplication.
 
 **Consequence:** Division by zero is caught client-side in normal use, so the server branch is rarely exercised. It remains necessary — it protects against direct API calls and frontend bugs — but the server is the authority.
@@ -235,7 +235,7 @@ The API client returns an `ApiResult` discriminated union, not throwing. Expecte
 
 #### Backend messages mapped to user text
 
-A single module translates Go's technical wording into user-facing messages. Unrecognised messages fall through to the raw backend text — the failure mode described in limitation 1."
+A single module translates Go's technical wording into user-facing messages. Unrecognised messages fall through to the raw backend text — the failure mode described in limitation 1.
 
 #### Race condition handling
 
@@ -246,6 +246,7 @@ Two calculations dispatched in quick succession: only the most recent one update
 - Every input has an associated `<label>`
 - Result uses `role="status"`, error uses `role="alert"` — status doesn't interrupt screen readers, alert does
 - Operator buttons have `aria-label` (symbols like × and ÷ don't read well)
+- The first input receives focus on load, and Tab moves between the two fields
 - Keypad supplements keyboard input; calculator remains usable by keyboard and assistive tech
 
 ### Floating-point precision
@@ -334,6 +335,21 @@ Response:
 }
 ```
 
+Another domain error — the square root of a negative number:
+
+```bash
+curl -X POST http://localhost:8080/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"valueA":-4,"valueB":0,"operation":"sqrt"}'
+```
+
+Response:
+```json
+{
+  "error": "square root of negative number"
+}
+```
+
 #### Format Error (400 Bad Request)
 
 The request is malformed or incomprehensible.
@@ -411,25 +427,6 @@ npm run preview
 
 ---
 
-## API Reference
-
-See [Backend README](./backend/README.md#api-endpoints) for full details.
-
-### POST /calculate
-
-```json
-{ "valueA": 10, "valueB": 2, "operation": "/" }
-```
-
-Returns:
-```json
-{ "result": 5, "operation": "/" }
-```
-
-**Operations:** `+`, `-`, `*`, `/`, `^` (power), `sqrt`, `%`
-
----
-
 ## File Structure
 
 ```
@@ -489,5 +486,3 @@ See [**PROMPTS.md**](./PROMPTS.md) for:
 - **Corrections** — Issues found during manual testing and how they were fixed
 
 PROMPTS.md documents the iterative process, not just the final result. It shows what worked, what didn't, and the reasoning behind architectural choices.
-
----

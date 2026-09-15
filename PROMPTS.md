@@ -12,7 +12,8 @@ The prompts are reproduced in the order I sent them. They are not the complete r
 between them I read, edited and rewrote the generated code by hand. Several prompts
 start by pointing at something I had already written — *"I already created the Add
 function, do the rest"*, *"you can use the checkResult method I wrote as a guide"* —
-because the AI was working inside a structure that already existed.
+because the AI was working inside a structure that already existed. Some pieces, such as
+the `/health` endpoint, were written directly without a prompt at all.
 
 I also used AI to draft the READMEs, guided section by section: I specified what each
 part had to contain and corrected the output wherever it was inaccurate or claimed more
@@ -21,7 +22,22 @@ than the code actually did. Some of those corrections are listed at the end.
 A note on Go specifically: I had not written Go before this assignment. I spent the
 weekend on *A Tour of Go* and built a small unrelated HTTP service (a temperature
 converter with the same three-package layout) to get the idioms into my hands before
-starting. The assignment itself was then written in the 2–4 hour window.
+starting.
+
+**On the time budget.** The application — backend, frontend, and the test suites on both
+sides — was built within the suggested 2–4 hour window. Three things were done after it
+closed, and these are all of them:
+
+1. The documentation (this file and the READMEs).
+2. The Dockerfiles and `docker-compose`.
+3. A short round of UX and accessibility fixes: moving the result panel above the fold
+   so it is visible without scrolling, focusing the first input on load, making Tab move
+   between the two fields, and adding a client-side error for a missing operator.
+
+No architectural or domain code was touched after the window. Everything listed as a
+known limitation in the README is still a limitation — the error `code` field, the
+`useKeypad` extraction and the rest were left as documented debt rather than quietly
+fixed on the extra time.
 
 ---
 
@@ -239,12 +255,12 @@ parentheses, ambiguous unary minus, and a grammar for `sqrt` and `%` — a large
 of new bugs in a deliverable whose brief explicitly asks to prioritise correctness over
 extra features, and an asymmetry with a backend that accepts one binary operation.
 
-**Documentation claiming more than the code does.** The generated README drafts included
-a `GET /health` endpoint that did not exist, labelled the backend "Clean Architecture"
-when the structure deliberately doesn't follow that taxonomy, and quoted an error
-message (`"cannot divide by zero"`) that did not match the sentinel in `calculator.go`.
-All three removed or corrected. The last one is the same string-coupling problem
-described in limitation 1 — it reached the documentation before it reached production.
+**Documentation claiming more than the code does.** The generated README drafts labelled
+the backend "Clean Architecture" when the structure deliberately doesn't follow that
+taxonomy, and quoted an error message (`"cannot divide by zero"`) that didn't match the
+sentinel in `calculator.go`. Both corrected. The second is the same string-coupling
+problem described in limitation 1 — it reached the documentation before it could reach
+production.
 
 **Redundant assertions in generated tests.** Two component tests asserted
 `expect(element).toBeTruthy()` on an element that had already rendered, which can never
@@ -262,3 +278,21 @@ first pass instead of the third.
 The least useful pattern was accepting generated helper abstractions without checking
 them against Go's control flow. Both of the structural bugs above came from code that
 looked reasonable and would have been correct in TypeScript.
+
+**The visual design is the weakest part of this submission, and deliberately so.** I
+specified the structural requirements for the UI — layout, states, accessibility,
+responsive behaviour from 320px — and then let the generated styling stand largely as
+it came back. I reviewed it for correctness, not for craft. With a fixed time budget I
+chose to spend the attention on the domain layer, the error taxonomy and the test
+suites, on the reasoning that those are harder to fix later and harder to evaluate from
+the outside. Given more time, the interface is the first thing I would rework.
+
+**I would also rather have built this with a single expression input** — one field where
+the user types `2+3` — instead of two separate operands. It's closer to how people
+actually use a calculator. I went with two inputs because that was the shape I designed
+against from the start, it matches the backend's binary contract exactly, and it was the
+path that reliably fit the time budget. A single input means a parser: operator
+precedence, parentheses, ambiguous unary minus, a grammar for `sqrt` and `%`. That's a
+significant surface of new failure modes in a deliverable whose brief asks for
+correctness over extra features, and I wasn't willing to ship a parser that works on the
+easy cases and breaks on `-5--3`.
