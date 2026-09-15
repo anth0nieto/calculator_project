@@ -1,75 +1,119 @@
-# React + TypeScript + Vite
+# Frontend - Calculator UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React UI for the calculator. Consumes the backend API and handles local validation, state management, and user interaction.
 
-Currently, two official plugins are available:
+## Stack & Versions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React** 19.2.8
+- **TypeScript** 6.0.2
+- **Vite** 8.3.0
+- **Vitest** 5.0.0 (tests + coverage)
+- **Testing Library** 16.3.3
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Architecture
 
 ```
+src/
+├── api/              Typed HTTP client + error mapping
+│   ├── client.ts     CalculatorApiClient class
+│   ├── types.ts      TypeScript interfaces
+│   └── errorMapper.ts Error string → user-friendly message
+│
+├── hooks/            State & logic
+│   ├── useCalculator.ts    State machine, validation, API calls
+│   └── validation.ts       Input validation rules
+│
+└── components/       UI
+    ├── Calculator.tsx     Main component + numeric keypad
+    └── Calculator.module.css  Responsive styles (320px+)
+```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+### Layers
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**api/** - HTTP Communication
+- `CalculatorApiClient`: POST to `/calculate`, handles 200/400/422 responses
+- `errorMapper`: Translates backend errors to user-friendly messages
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**hooks/** - Business Logic
+- `useCalculator`: Manages state (valueA, valueB, operation, result, error)
+- Validates input locally (numbers, division by zero, negative sqrt)
+- Detects unary operations (sqrt ignores valueB)
+- Prevents race conditions with requestId tracking
 
+**components/** - UI Layer
+- `Calculator`: Numeric keypad (0-9, +, −, ×, ÷, √, ^, %)
+- Sign toggle, delete, equals, reset buttons
+- Responsive from 320px
+- Accessibility: aria-labels, role="alert", role="status"
+
+---
+
+## Run Locally (Without Docker)
+
+```bash
+npm install
+npm run dev
+```
+
+Access at `http://localhost:5173`
+
+Backend must be running at `http://localhost:8080` (default)
+
+### Custom API URL
+
+To connect to a different backend:
+
+```bash
+VITE_API_URL=http://your-api-url:8080 npm run dev
+```
+
+Or create `.env.local`:
+```
+VITE_API_URL=http://your-api-url:8080
+```
+
+Then run `npm run dev` and it will use your URL automatically.
+
+---
+
+## Run with Docker
+
+From project root:
+
+```bash
+docker-compose up
+```
+
+Access at `http://localhost:3000`
+
+Frontend connects to backend automatically via internal network.
+
+---
+
+## Tests & Coverage
+
+```bash
+# Tests
+npm run test              # Watch mode
+npm run test:run          # Single run
+
+# Coverage
+npm run test:coverage     # Generates HTML report
+```
+
+Report at `coverage/index.html` → Open in browser
+
+Or from project root:
+```bash
+./coverage.sh
+```
+
+---
+
+## Development
+
+```bash
+npm run lint              # ESLint
+npm run lint:fix          # Auto-fix issues
+npm run build             # TypeScript + Vite
 ```
