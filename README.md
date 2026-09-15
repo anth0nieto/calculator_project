@@ -471,8 +471,23 @@ Returns:
 ├── docker-compose.yml
 ├── coverage.sh
 ├── DOCKER.md
+├── PROMPTS.md
 ├── .gitignore
 └── README.md (this file)
 ```
+
+---
+
+## How This Project Was Built
+
+See [**PROMPTS.md**](./PROMPTS.md) for:
+
+- **Prompts used** — Each phase of development (domain layer, HTTP layer, frontend, component, etc.)
+- **Key decisions** — Why certain patterns were chosen
+- **What was rejected** — Alternative approaches and why they didn't work
+- **Assumptions** — Decisions made before code was written
+- **Corrections** — Issues found during manual testing and how they were fixed
+
+PROMPTS.md documents the iterative process, not just the final result. It shows what worked, what didn't, and the reasoning behind architectural choices.
 
 ---
