@@ -1,0 +1,9 @@
+README.md
+.git
+.gitignore
+.DS_Store
+*.local
+node_modules
+.coverage
+coverage
+dist
