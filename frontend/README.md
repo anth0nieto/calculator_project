@@ -50,6 +50,11 @@ src/
 
 ## Run Locally (Without Docker)
 
+### Prerequisites
+- Node.js 20+ with npm
+
+### Start
+
 ```bash
 npm install
 npm run dev

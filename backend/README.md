@@ -19,7 +19,7 @@ Go REST API for the calculator. Pure domain logic separated from HTTP transport,
 └── internal/
     ├── calculator/          Domain logic (100% transport-agnostic)
     │   ├── calculator.go    Core arithmetic functions
-    │   └── calculator_test.go 62 comprehensive tests
+    │   └── calculator_test.go 57 tests
     │
     └── httpapi/             HTTP transport layer
         ├── handler.go       HTTP handlers, error translation, CORS
@@ -54,7 +54,7 @@ Go REST API for the calculator. Pure domain logic separated from HTTP transport,
 ## Run Locally (Without Docker)
 
 ### Prerequisites
-- Go 1.27+ installed
+- Go 1.27+
 
 ### Start Server
 
@@ -158,7 +158,7 @@ Calculate with two operands.
 **Error (400/422):**
 ```json
 {
-  "error": "cannot divide by zero"
+  "error": "division by zero"
 }
 ```
 
